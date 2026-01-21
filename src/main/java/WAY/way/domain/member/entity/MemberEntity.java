@@ -34,6 +34,7 @@ public class MemberEntity {
     @Column(nullable = false, unique = true ,name = "student_number", length =4)
     private String studentNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "role")
     private Role role;
 }
