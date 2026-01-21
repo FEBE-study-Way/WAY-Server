@@ -22,8 +22,8 @@ public class MemberEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservationId", nullable = false)
-    private ReservationEntity reservation_id;
+    @JoinColumn(name = "reservation_id", nullable = true)
+    private ReservationEntity reservationId;
 
     @Column(nullable = false, unique = true ,name = "email")
     private String email;
