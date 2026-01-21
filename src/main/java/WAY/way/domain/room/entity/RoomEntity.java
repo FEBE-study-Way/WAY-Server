@@ -1,7 +1,7 @@
 package WAY.way.domain.room.entity;
 
 import WAY.way.domain.member.entity.MemberEntity;
-import WAY.way.domain.room.presetation.data.Kind;
+import WAY.way.domain.room.presentation.data.Kind;
 import jakarta.persistence.*;
 import lombok.*;
 
