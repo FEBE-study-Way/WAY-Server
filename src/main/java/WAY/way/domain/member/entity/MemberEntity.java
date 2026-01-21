@@ -8,7 +8,6 @@ import lombok.*;
 
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
