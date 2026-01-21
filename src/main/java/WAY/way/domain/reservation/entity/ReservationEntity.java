@@ -6,6 +6,8 @@ import WAY.way.domain.room.entity.RoomEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @Getter
@@ -33,10 +35,13 @@ public class ReservationEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private MemberEntity user;
+    private MemberEntity user;  // 실 선생님
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private RoomEntity room;
+
+    @OneToMany(mappedBy = "reservationId")
+    private List<MemberEntity> participants; // 예약한 사람들
 
 }
