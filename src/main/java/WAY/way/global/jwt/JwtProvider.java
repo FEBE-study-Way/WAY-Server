@@ -1,0 +1,104 @@
+package WAY.way.global.jwt;
+
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class JwtProvider {
+
+    private final JwtProperties jwtProperties;
+    private SecretKey secretKey;
+
+    private static final String TOKEN_TYPE = "type";
+    private static final String ACCESS_TOKEN = "accessToken";
+    private static final String REFRESH_TOKEN = "refreshToken";
+    private static final String USER_ID = "userId";
+
+    @PostConstruct
+    public void init() {
+        String key = jwtProperties.getSecret();
+        this.secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateAccessToken(Long userId, String email) {
+        return createToken(userId,email,ACCESS_TOKEN, jwtProperties.getAccessTokenValidity());
+    }
+
+    public String generateRefreshToken(Long userId, String email) {
+        return createToken(userId,email,REFRESH_TOKEN,jwtProperties.getRefreshTokenValidity());
+    }
+
+    private String createToken(Long userId, String email, String type, long validity){
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + validity);
+
+        return Jwts.builder()
+                .setSubject(email)
+                .claim(USER_ID,userId)
+                .claim(TOKEN_TYPE,type)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(secretKey,Jwts.SIG.HS256)
+                .compact();
+    }
+
+    public boolean isAccessTokenValid(String token) {
+        return ACCESS_TOKEN.equals(getClaims(token).get(TOKEN_TYPE, String.class));
+    }
+
+    public boolean isRefreshTokenValid(String token) {
+        return REFRESH_TOKEN.equals(getClaims(token).get(TOKEN_TYPE, String.class));
+    }
+    public Claims getClaims(String token) {
+        try{
+            return Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        }catch(ExpiredJwtException e){
+            return e.getClaims();
+        }
+    }
+
+    public String getUserEmail(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    public Long getUserId(String token) {
+        return getClaims(token).get(USER_ID, Long.class);
+    }
+
+    public boolean validateToken(String token) {
+        try{
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch(SecurityException | MalformedJwtException e){
+            log.error("잘못된 JWT 서명입니다.");
+        }catch (ExpiredJwtException e){
+            log.error("만료된 JWT 토큰입니다.");
+        }catch (UnsupportedJwtException e){
+            log.error("지원하지 않는 JWT 토큰입니다.");
+        }catch (IllegalArgumentException e){
+            log.error("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
+    }
+
+
+
+
+}
