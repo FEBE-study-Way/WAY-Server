@@ -82,9 +82,9 @@ public class JwtProvider {
         return getClaims(token).get(USER_ID, Long.class);
     }
 
-    public String getRole(String token) {
+    public Role getRole(String token) {
         String role = getClaims(token).get(ROLE, String.class);
-        return Role.valueOf(role).name();
+        return Role.valueOf(role);
     }
 
     public boolean validateToken(String token) {
