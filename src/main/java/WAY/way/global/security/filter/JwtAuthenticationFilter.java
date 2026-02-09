@@ -68,6 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return request.getMethod().equalsIgnoreCase("OPTIONS")
                 || matcher.match("/api/v1/auth/**", uri)
                 || matcher.match("/api/oauth2/**", uri)
-                ||matcher.match("/login/oauth2/**", uri);
+                || matcher.match("/login/oauth2/**", uri)
+                || matcher.match("/oauth2/**", uri)
+                || matcher.match("/error", uri);
     }
 }
