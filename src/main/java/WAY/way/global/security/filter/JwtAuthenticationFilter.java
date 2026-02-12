@@ -1,5 +1,7 @@
 package WAY.way.global.security.filter;
 
+import WAY.way.global.auth.MemberDetails;
+import WAY.way.global.auth.MemberDetailsService;
 import WAY.way.global.jwt.JwtProvider;
 import WAY.way.global.jwt.TokenParser;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -28,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final TokenParser tokenParser;
 
     private final AntPathMatcher matcher = new AntPathMatcher();
+    private final MemberDetailsService memberDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -39,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (jwtProvider.isAccessTokenValid(token)) {
 
-                    Authentication authentication = tokenParser.parseAuthentication(token);
+                    Authentication authentication = createAuthentication(token);
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
@@ -59,6 +63,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    private Authentication createAuthentication(String token) {
+        String email = tokenParser.getUserEmail(token);
+        MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
+
+        return new UsernamePasswordAuthenticationToken(
+                memberDetails,
+                null,
+                memberDetails.getAuthorities());
+    }
+
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
