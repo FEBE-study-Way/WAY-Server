@@ -4,9 +4,11 @@ import WAY.way.domain.member.presentation.data.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +27,8 @@ public class JwtProvider {
     private static final String REFRESH_TOKEN = "refreshToken";
     private static final String USER_ID = "userId";
     private static final String ROLE = "role";
+    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @PostConstruct
     public void init() {
@@ -105,6 +109,24 @@ public class JwtProvider {
         }
         return false;
     }
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(BEARER_PREFIX.length());
+        }
+        return null;
+    }
+
+    public String parseRefreshToken(String refreshToken) {
+        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith(BEARER_PREFIX)) {
+            return refreshToken.substring(BEARER_PREFIX.length());
+        }
+        return refreshToken;
+    }
+
+
+
 
 
 

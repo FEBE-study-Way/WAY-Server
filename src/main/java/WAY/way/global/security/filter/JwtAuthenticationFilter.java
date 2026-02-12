@@ -3,7 +3,6 @@ package WAY.way.global.security.filter;
 import WAY.way.global.auth.MemberDetails;
 import WAY.way.global.auth.MemberDetailsService;
 import WAY.way.global.jwt.JwtProvider;
-import WAY.way.global.jwt.TokenParser;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -28,7 +27,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final TokenParser tokenParser;
 
     private final AntPathMatcher matcher = new AntPathMatcher();
     private final MemberDetailsService memberDetailsService;
@@ -38,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = tokenParser.resolveToken(request);
+            String token = jwtProvider.resolveToken(request);
             if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
 
                 if (jwtProvider.isAccessTokenValid(token)) {
@@ -65,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication createAuthentication(String token) {
-        String email = tokenParser.getUserEmail(token);
+        String email = jwtProvider.getUserEmail(token);
         MemberDetails memberDetails = memberDetailsService.loadUserByUsername(email);
 
         return new UsernamePasswordAuthenticationToken(
