@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: way
+
+  # ==============================
+  # Database
+  # ==============================
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ==============================
+  # Redis
+  # ==============================
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # ==============================
+  # OAuth2 Login
+  # ==============================
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000/callback/google}
+            scope:
+              - email
+              - profile
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+
+# ==============================
+# JWT
+# ==============================
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 1800
+  refresh-token-expiration: 1209600
+
+
+# ==============================
+# API Docs / Swagger
+# ==============================
+springdoc:
+  querydsl:
+    enabled: false
+
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
