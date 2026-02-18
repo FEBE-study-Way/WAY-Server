@@ -7,6 +7,7 @@ import WAY.way.global.oauth.common.OAuthType;
 import WAY.way.global.oauth.data.MemberCommand;
 import WAY.way.global.oauth.exception.OAuth2AuthenticationProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,7 @@ public class MemberRegistrationServiceImpl implements MemberRegistrationService 
         try{
             return memberRepository.findByEmail(command.email())
                     .orElseGet(()->register(command));
-        } catch(Exception e){
+        } catch(DataIntegrityViolationException e){
             return memberRepository.findByEmail(command.email())
                     .orElseThrow(OAuth2AuthenticationProcessingException::new);
         }
