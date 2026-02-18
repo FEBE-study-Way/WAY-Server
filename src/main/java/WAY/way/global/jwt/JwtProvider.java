@@ -1,5 +1,6 @@
 package WAY.way.global.jwt;
 
+import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.member.presentation.data.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -12,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -36,24 +39,44 @@ public class JwtProvider {
         this.secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
     }
 
+    public TokenResponse receiveToken(Long userId, String email, Role role) {
+        long now = System.currentTimeMillis();
+
+        Date accessExpiryDate = new Date(now + (jwtProperties.getAccessTokenExpiration() * 1000L));
+        Date refreshExpiryDate = new Date(now + (jwtProperties.getRefreshTokenExpiration() * 1000L));
+
+        String accessToken = createToken(userId, email, role, ACCESS_TOKEN, accessExpiryDate);
+        String refreshToken = createToken(userId, email, role, REFRESH_TOKEN, refreshExpiryDate);
+
+        return new TokenResponse(
+                accessToken,
+                toLocalDateTime(accessExpiryDate),
+                refreshToken,
+                toLocalDateTime(refreshExpiryDate),
+                role
+        );
+    }
+
     public String generateAccessToken(Long userId, String email , Role role) {
-        return createToken(userId,email,role,ACCESS_TOKEN, jwtProperties.getAccessTokenValidity());
+        long now = System.currentTimeMillis();
+        Date expiryDate = new Date(now + jwtProperties.getAccessTokenExpiration() * 1000L);
+        return createToken(userId, email, role, ACCESS_TOKEN, expiryDate);
     }
 
     public String generateRefreshToken(Long userId, String email, Role role) {
-        return createToken(userId,email,role,REFRESH_TOKEN,jwtProperties.getRefreshTokenValidity());
+        long now = System.currentTimeMillis();
+        Date expiryDate = new Date(now + jwtProperties.getRefreshTokenExpiration() * 1000L);
+        return createToken(userId, email, role, REFRESH_TOKEN, expiryDate);
     }
 
-    private String createToken(Long userId, String email,Role role, String type, long validity){
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + validity * 1000L);
+    private String createToken(Long userId, String email,Role role, String type, Date expiryDate){
 
         return Jwts.builder()
                 .setSubject(email)
                 .claim(USER_ID,userId)
                 .claim(ROLE,role.name())
                 .claim(TOKEN_TYPE,type)
-                .setIssuedAt(now)
+                .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(secretKey,Jwts.SIG.HS256)
                 .compact();
@@ -125,10 +148,12 @@ public class JwtProvider {
         return refreshToken;
     }
 
-
-
-
-
-
-
+    private LocalDateTime toLocalDateTime(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+    private Date calculateExpiryDate(long validitySeconds) {
+        return new Date(System.currentTimeMillis() + validitySeconds * 1000L);
+    }
 }
