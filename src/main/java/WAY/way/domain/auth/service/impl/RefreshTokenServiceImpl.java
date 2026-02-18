@@ -41,7 +41,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public TokenResponse reissueAccessToken(String refreshToken) {
-        jwtProvider.validateToken(refreshToken);
+        if(!jwtProvider.validateToken(refreshToken)){
+            throw new InvalidRefreshToken();
+        }
 
         Long userId = jwtProvider.getUserId(refreshToken);
         String email = jwtProvider.getUserEmail(refreshToken);
