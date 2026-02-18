@@ -2,7 +2,7 @@ package WAY.way.domain.auth.service.impl;
 
 import WAY.way.domain.auth.entity.RefreshToken;
 import WAY.way.domain.auth.exception.InvalidRefreshToken;
-import WAY.way.domain.auth.exception.RefreshTokenNNotFound;
+import WAY.way.domain.auth.exception.RefreshTokenNotFound;
 import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.auth.repository.RefreshTokenRepository;
 import WAY.way.domain.auth.service.RefreshTokenService;
@@ -12,8 +12,6 @@ import WAY.way.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +50,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
 
         RefreshToken stored = refreshTokenRepository.findById(userId)
-                .orElseThrow(RefreshTokenNNotFound::new);
+                .orElseThrow(RefreshTokenNotFound::new);
         // 로그 추가: DB 값과 들어온 값 비교
         System.out.println("DB 토큰: " + stored.getToken());
         System.out.println("보낸 토큰: " + refreshToken);
