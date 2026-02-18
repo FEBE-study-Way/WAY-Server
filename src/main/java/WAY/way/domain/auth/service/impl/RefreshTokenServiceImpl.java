@@ -51,9 +51,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         RefreshToken stored = refreshTokenRepository.findById(userId)
                 .orElseThrow(RefreshTokenNotFound::new);
-        // 로그 추가: DB 값과 들어온 값 비교
-        System.out.println("DB 토큰: " + stored.getToken());
-        System.out.println("보낸 토큰: " + refreshToken);
 
         if(!stored.getToken().equals(refreshToken)) {
             throw new InvalidRefreshToken();
