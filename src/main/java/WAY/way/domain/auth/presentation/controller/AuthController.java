@@ -17,7 +17,7 @@ public class AuthController {
     private final OAuthLoginService  oAuthLoginService;
     private final RefreshTokenService refreshTokenService;
 
-    @PutMapping("/refresh")
+    @PatchMapping("/refresh")
     public ResponseEntity<TokenResponse> reissue(@RequestHeader("RefreshToken") String refreshToken, HttpServletResponse response) {
         TokenResponse token =
                 refreshTokenService.reissueAccessToken(refreshToken);
