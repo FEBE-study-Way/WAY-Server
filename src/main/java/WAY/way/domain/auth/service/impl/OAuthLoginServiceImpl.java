@@ -7,7 +7,6 @@ import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.auth.repository.RefreshTokenRepository;
 import WAY.way.domain.auth.service.MemberRegistrationService;
 import WAY.way.domain.auth.service.OAuthLoginService;
-import WAY.way.domain.auth.service.RefreshTokenService;
 import WAY.way.domain.member.entity.MemberEntity;
 import WAY.way.global.jwt.JwtProperties;
 import WAY.way.global.jwt.JwtProvider;
