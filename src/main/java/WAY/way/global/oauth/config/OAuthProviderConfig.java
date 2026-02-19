@@ -6,6 +6,7 @@ import WAY.way.global.oauth.exception.UnsupportedOAuthProviderException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -21,11 +22,10 @@ public class OAuthProviderConfig {
             @Value("${spring.security.oauth2.client.registration.google.redirect-uri}") String googleRedirectUri
             ){
 
-        providers  = Map.of(
-                OAuthType.GOOGLE, new ProviderProperties(
-                        googleClientId, googleClientSecret, googleTokenUri, googleUserInfoUri, googleRedirectUri
-                )
-        );
+        providers = new HashMap<>();
+        providers.put(OAuthType.GOOGLE, new ProviderProperties(
+                googleClientId, googleClientSecret, googleTokenUri, googleUserInfoUri, googleRedirectUri
+        ));
     }
 
     public ProviderProperties get(OAuthType oAuthType){
