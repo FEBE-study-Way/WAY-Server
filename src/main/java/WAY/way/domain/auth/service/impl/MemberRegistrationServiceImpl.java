@@ -7,6 +7,7 @@ import WAY.way.global.oauth.common.OAuthType;
 import WAY.way.global.oauth.data.MemberCommand;
 import WAY.way.global.oauth.exception.OAuth2AuthenticationProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MemberRegistrationServiceImpl implements MemberRegistrationService {
 
     private final MemberRepository memberRepository;
@@ -24,6 +26,7 @@ public class MemberRegistrationServiceImpl implements MemberRegistrationService 
             return memberRepository.findByEmail(command.email())
                     .orElseGet(()->register(command));
         } catch(DataIntegrityViolationException e){
+            log.error("Data integrity violation during member registration: {}", e.getMessage());
             return memberRepository.findByEmail(command.email())
                     .orElseThrow(OAuth2AuthenticationProcessingException::new);
         }
