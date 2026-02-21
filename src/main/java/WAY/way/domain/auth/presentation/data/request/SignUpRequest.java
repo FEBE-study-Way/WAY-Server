@@ -8,7 +8,7 @@ public record SignUpRequest(
         String name,
 
         @NotBlank(message = "학번은 필수입니다.")
-        @Pattern(regexp = "^[1-3][1-4](0[1-9]|1[0-8])$")
+        @Pattern(regexp = "^[1-3][1-4](0[1-9]|1[0-8])$",message = "학번 형식이 올바르지 않습니다.")
         String studentNumber
 ) {
 }
