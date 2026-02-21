@@ -1,5 +1,6 @@
 package WAY.way.global.jwt;
 
+import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.member.presentation.data.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -12,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -32,30 +35,44 @@ public class JwtProvider {
 
     @PostConstruct
     public void init() {
-        String key = jwtProperties.getSecret();
-        this.secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+        this.secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(Long userId, String email , Role role) {
-        return createToken(userId,email,role,ACCESS_TOKEN, jwtProperties.getAccessTokenValidity());
+    public TokenResponse receiveToken(Long userId, String email, Role role) {
+        Date accessExpiryDate = calculateExpiryDate(jwtProperties.getAccessTokenExpiration());
+        Date refreshExpiryDate = calculateExpiryDate(jwtProperties.getRefreshTokenExpiration());
+
+        String accessToken = createToken(userId, email, role, ACCESS_TOKEN, accessExpiryDate);
+        String refreshToken = createToken(userId, email, role, REFRESH_TOKEN, refreshExpiryDate);
+
+        return new TokenResponse(
+                accessToken,
+                toLocalDateTime(accessExpiryDate),
+                refreshToken,
+                toLocalDateTime(refreshExpiryDate),
+                role
+        );
+    }
+
+    public String generateAccessToken(Long userId, String email, Role role) {
+        Date expiryDate = calculateExpiryDate(jwtProperties.getAccessTokenExpiration());
+        return createToken(userId, email, role, ACCESS_TOKEN, expiryDate);
     }
 
     public String generateRefreshToken(Long userId, String email, Role role) {
-        return createToken(userId,email,role,REFRESH_TOKEN,jwtProperties.getRefreshTokenValidity());
+        Date expiryDate = calculateExpiryDate(jwtProperties.getRefreshTokenExpiration());
+        return createToken(userId, email, role, REFRESH_TOKEN, expiryDate);
     }
 
-    private String createToken(Long userId, String email,Role role, String type, long validity){
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + validity * 1000L);
-
+    private String createToken(Long userId, String email, Role role, String type, Date expiryDate) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim(USER_ID,userId)
-                .claim(ROLE,role.name())
-                .claim(TOKEN_TYPE,type)
-                .setIssuedAt(now)
+                .claim(USER_ID, userId)
+                .claim(ROLE, role.name())
+                .claim(TOKEN_TYPE, type)
+                .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(secretKey,Jwts.SIG.HS256)
+                .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -66,14 +83,15 @@ public class JwtProvider {
     public boolean isRefreshTokenValid(String token) {
         return REFRESH_TOKEN.equals(getClaims(token).get(TOKEN_TYPE, String.class));
     }
+
     public Claims getClaims(String token) {
-        try{
+        try {
             return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-        }catch(ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
     }
@@ -92,26 +110,26 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token) {
-        try{
+        try {
             Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch(SecurityException | MalformedJwtException e){
+        } catch (SecurityException | MalformedJwtException e) {
             log.error("잘못된 JWT 서명입니다.");
-        }catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             log.error("만료된 JWT 토큰입니다.");
-        }catch (UnsupportedJwtException e){
+        } catch (UnsupportedJwtException e) {
             log.error("지원하지 않는 JWT 토큰입니다.");
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.error("JWT 토큰이 잘못되었습니다.");
         }
         return false;
     }
+
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
@@ -125,10 +143,13 @@ public class JwtProvider {
         return refreshToken;
     }
 
+    private LocalDateTime toLocalDateTime(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
 
-
-
-
-
-
+    private Date calculateExpiryDate(long validitySeconds) {
+        return new Date(System.currentTimeMillis() + validitySeconds * 1000L);
+    }
 }

@@ -2,7 +2,7 @@ package WAY.way.domain.member.entity;
 
 import WAY.way.domain.member.presentation.data.Role;
 import WAY.way.domain.reservation.entity.ReservationEntity;
-import WAY.way.domain.room.entity.RoomEntity;
+import WAY.way.global.oauth.common.OAuthType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,10 +27,17 @@ public class MemberEntity {
     @Column(nullable = false, unique = true ,name = "email")
     private String email;
 
-    @Column(nullable = false, unique = true ,name = "name")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "provider")
+    private OAuthType provider;
+
+    @Column(nullable = false,name = "provider_id")
+    private String providerId;
+
+    @Column(nullable = true, unique = true ,name = "name")
     private String name;
 
-    @Column(nullable = false, unique = true ,name = "student_number", length =4)
+    @Column(nullable = true, unique = true ,name = "student_number", length =4)
     private String studentNumber;
 
     @Enumerated(EnumType.STRING)
