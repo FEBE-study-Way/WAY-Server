@@ -22,6 +22,7 @@ public enum ErrorCode {
     OAUTH_PROCESSING_ERROR(500, "OAuth 처리 중 오류가 발생했습니다."),
 
     INVALID_EMAIL_DOMAIN(403,"허용되지 않는 이메일 도메인입니다."),
+    MEMBER_ALREADY_EXISTS(409, "이미 가입된 사용자입니다."),
 
     // JWT / Token 관련
     ACCESS_TOKEN_EXPIRED(401, "Access Token이 만료되었습니다."),
