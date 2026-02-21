@@ -29,7 +29,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshTokenRepository.deleteById(userId);
 
         RefreshToken token = RefreshToken.builder()
-                .id(userId)
+                .userId(userId)
                 .token(response.refreshToken())
                 .expiresIn(jwtProperties.getRefreshTokenExpiration())
                 .build();
@@ -66,7 +66,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         ).getSeconds();
 
         RefreshToken newToken = RefreshToken.builder()
-                .id(userId)
+                .userId(userId)
                 .token(response.refreshToken())
                 .expiresIn(expiresInSeconds)
                 .build();
