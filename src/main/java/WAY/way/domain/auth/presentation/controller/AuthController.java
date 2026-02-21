@@ -41,6 +41,6 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<TokenResponse> signup(@Valid @RequestBody SignUpRequest request) {
         TokenResponse response = singUpService.execute(request);
-        return  ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);
     }
 }
