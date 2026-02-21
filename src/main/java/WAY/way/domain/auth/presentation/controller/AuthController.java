@@ -5,7 +5,7 @@ import WAY.way.domain.auth.presentation.data.request.SignUpRequest;
 import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.auth.service.OAuthLoginService;
 import WAY.way.domain.auth.service.RefreshTokenService;
-import WAY.way.domain.auth.service.SingUpService;
+import WAY.way.domain.auth.service.SignUpService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class AuthController {
 
     private final OAuthLoginService  oAuthLoginService;
     private final RefreshTokenService refreshTokenService;
-    private final SingUpService singUpService;
+    private final SignUpService singUpService;
 
     @PatchMapping("/refresh")
     public ResponseEntity<TokenResponse> reissue(@RequestHeader("RefreshToken") String refreshToken, HttpServletResponse response) {

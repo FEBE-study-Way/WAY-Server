@@ -4,7 +4,7 @@ import WAY.way.domain.auth.exception.MemberAlreadyExistsException;
 import WAY.way.domain.auth.presentation.data.request.SignUpRequest;
 import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.auth.service.RefreshTokenService;
-import WAY.way.domain.auth.service.SingUpService;
+import WAY.way.domain.auth.service.SignUpService;
 import WAY.way.domain.member.entity.MemberEntity;
 import WAY.way.domain.member.presentation.data.Role;
 import WAY.way.global.util.MemberUtil;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SingUpServiceImpl implements SingUpService {
+public class SingUpServiceImpl implements SignUpService {
 
     private final MemberUtil memberUtil;
     private final RefreshTokenService refreshTokenService;
