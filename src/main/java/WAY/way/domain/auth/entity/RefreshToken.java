@@ -22,8 +22,4 @@ public class RefreshToken {
     @TimeToLive(unit = TimeUnit.SECONDS)
     private Long expiresIn;
 
-    public void updateToken(String token) {
-        this.token = token;
-    }
-
 }
