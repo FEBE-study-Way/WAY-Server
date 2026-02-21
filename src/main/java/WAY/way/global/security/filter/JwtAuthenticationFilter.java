@@ -3,6 +3,7 @@ package WAY.way.global.security.filter;
 import WAY.way.global.auth.MemberDetails;
 import WAY.way.global.auth.MemberDetailsService;
 import WAY.way.global.jwt.JwtProvider;
+import WAY.way.global.security.config.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -17,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,9 +31,8 @@ import java.util.Map;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final AntPathMatcher matcher = new AntPathMatcher();
     private final MemberDetailsService memberDetailsService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,7 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = jwtProvider.resolveToken(request);
             if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
-
                 if (jwtProvider.isAccessTokenValid(token)) {
                     Authentication authentication = createAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -77,10 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
-
-        return request.getMethod().equalsIgnoreCase("OPTIONS")
-                || matcher.match("/api/v1/auth/oauth", uri)
-                || matcher.match("/error", uri);
+        return request.getMethod().equalsIgnoreCase("OPTIONS") ||
+                SecurityConfig.isPublicUrl(uri);
     }
 
     private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
