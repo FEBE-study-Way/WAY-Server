@@ -37,7 +37,6 @@ public class MemberRegistrationServiceImpl implements MemberRegistrationService 
                         .email(command.email())
                         .provider(OAuthType.GOOGLE)
                         .providerId(command.providerId())
-                        .role(command.role())
                 .build());
     }
 }
