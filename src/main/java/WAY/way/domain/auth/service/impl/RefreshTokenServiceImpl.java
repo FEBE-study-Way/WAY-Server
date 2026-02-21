@@ -41,7 +41,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public TokenResponse reissueAccessToken(String refreshToken) {
-        if(!jwtProvider.validateToken(refreshToken)){
+        if (!jwtProvider.validateToken(refreshToken)) {
             throw new InvalidRefreshToken();
         }
 
@@ -49,18 +49,29 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         String email = jwtProvider.getUserEmail(refreshToken);
         Role role = jwtProvider.getRole(refreshToken);
 
-
-
         RefreshToken stored = refreshTokenRepository.findById(userId)
                 .orElseThrow(RefreshTokenNotFound::new);
 
-        if(!stored.getToken().equals(refreshToken)) {
+        if (!stored.getToken().equals(refreshToken)) {
             throw new InvalidRefreshToken();
         }
 
+        refreshTokenRepository.deleteById(userId);
+
         TokenResponse response = jwtProvider.receiveToken(userId, email, role);
 
-        stored.updateToken(response.refreshToken());
+        long expiresInSeconds = java.time.Duration.between(
+                java.time.LocalDateTime.now(),
+                response.refreshTokenExpiresAt()
+        ).getSeconds();
+
+        RefreshToken newToken = RefreshToken.builder()
+                .id(userId)
+                .token(response.refreshToken())
+                .expiresIn(expiresInSeconds)
+                .build();
+
+        refreshTokenRepository.save(newToken);
 
         return response;
     }
