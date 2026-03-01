@@ -35,9 +35,8 @@ public class MemberRegistrationServiceImpl implements MemberRegistrationService 
     private MemberEntity register(MemberCommand command) {
         return memberRepository.save(MemberEntity.builder()
                         .email(command.email())
-                        .provider(OAuthType.GOOGLE)
+                        .provider(command.provider())
                         .providerId(command.providerId())
-                        .role(command.role())
                 .build());
     }
 }

@@ -1,8 +1,8 @@
 package WAY.way.domain.auth.service.impl;
 
 import WAY.way.domain.auth.entity.RefreshToken;
-import WAY.way.domain.auth.exception.InvalidRefreshToken;
-import WAY.way.domain.auth.exception.RefreshTokenNotFound;
+import WAY.way.domain.auth.exception.InvalidRefreshTokenException;
+import WAY.way.domain.auth.exception.RefreshTokenNotFoundException;
 import WAY.way.domain.auth.presentation.data.response.TokenResponse;
 import WAY.way.domain.auth.repository.RefreshTokenRepository;
 import WAY.way.domain.auth.service.RefreshTokenService;
@@ -29,7 +29,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshTokenRepository.deleteById(userId);
 
         RefreshToken token = RefreshToken.builder()
-                .id(userId)
+                .userId(userId)
                 .token(response.refreshToken())
                 .expiresIn(jwtProperties.getRefreshTokenExpiration())
                 .build();
@@ -41,26 +41,37 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public TokenResponse reissueAccessToken(String refreshToken) {
-        if(!jwtProvider.validateToken(refreshToken)){
-            throw new InvalidRefreshToken();
+        if (!jwtProvider.validateToken(refreshToken)) {
+            throw new InvalidRefreshTokenException();
         }
 
         Long userId = jwtProvider.getUserId(refreshToken);
         String email = jwtProvider.getUserEmail(refreshToken);
         Role role = jwtProvider.getRole(refreshToken);
 
-
-
         RefreshToken stored = refreshTokenRepository.findById(userId)
-                .orElseThrow(RefreshTokenNotFound::new);
+                .orElseThrow(RefreshTokenNotFoundException::new);
 
-        if(!stored.getToken().equals(refreshToken)) {
-            throw new InvalidRefreshToken();
+        if (!stored.getToken().equals(refreshToken)) {
+            throw new InvalidRefreshTokenException();
         }
+
+        refreshTokenRepository.deleteById(userId);
 
         TokenResponse response = jwtProvider.receiveToken(userId, email, role);
 
-        stored.updateToken(response.refreshToken());
+        long expiresInSeconds = java.time.Duration.between(
+                java.time.LocalDateTime.now(),
+                response.refreshTokenExpiresAt()
+        ).getSeconds();
+
+        RefreshToken newToken = RefreshToken.builder()
+                .userId(userId)
+                .token(response.refreshToken())
+                .expiresIn(expiresInSeconds)
+                .build();
+
+        refreshTokenRepository.save(newToken);
 
         return response;
     }

@@ -15,15 +15,11 @@ import java.util.concurrent.TimeUnit;
 public class RefreshToken {
 
     @Id
-    private Long id;
+    private Long userId;
 
     private String token;
 
     @TimeToLive(unit = TimeUnit.SECONDS)
     private Long expiresIn;
-
-    public void updateToken(String token) {
-        this.token = token;
-    }
 
 }

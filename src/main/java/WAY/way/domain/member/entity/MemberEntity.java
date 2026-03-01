@@ -34,7 +34,7 @@ public class MemberEntity {
     @Column(nullable = false,name = "provider_id")
     private String providerId;
 
-    @Column(nullable = true, unique = true ,name = "name")
+    @Column(nullable = true ,name = "name")
     private String name;
 
     @Column(nullable = true, unique = true ,name = "student_number", length =4)
@@ -42,5 +42,16 @@ public class MemberEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "role")
-    private Role role;
+    @Builder.Default
+    private Role role =Role.UNAUTHENTICATED;
+
+    public void completeSignUp(String name, String studentNumber) {
+        this.name = name;
+        this.studentNumber = studentNumber;
+        this.role = Role.USER;
+    }
+
+    public void updateStudentNumber(String studentNumber) {
+        this.studentNumber = studentNumber;
+    }
 }

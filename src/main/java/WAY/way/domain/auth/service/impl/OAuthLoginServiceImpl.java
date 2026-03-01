@@ -1,15 +1,12 @@
 package WAY.way.domain.auth.service.impl;
 
-import WAY.way.domain.auth.entity.RefreshToken;
 import WAY.way.domain.auth.exception.InvalidEmailDomainException;
 import WAY.way.domain.auth.presentation.data.request.OAuthLoginRequest;
 import WAY.way.domain.auth.presentation.data.response.TokenResponse;
-import WAY.way.domain.auth.repository.RefreshTokenRepository;
 import WAY.way.domain.auth.service.MemberRegistrationService;
 import WAY.way.domain.auth.service.OAuthLoginService;
+import WAY.way.domain.auth.service.RefreshTokenService;
 import WAY.way.domain.member.entity.MemberEntity;
-import WAY.way.global.jwt.JwtProperties;
-import WAY.way.global.jwt.JwtProvider;
 import WAY.way.global.oauth.client.OAuthClient;
 import WAY.way.global.oauth.common.OAuthType;
 import WAY.way.global.oauth.data.MemberCommand;
@@ -29,9 +26,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
 
     private final OAuthClient oAuthClient;
     private final MemberRegistrationService memberRegistrationService;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtProvider jwtProvider;
-    private final JwtProperties jwtProperties;
+    private final RefreshTokenService refreshTokenService;
 
     private static final String ALLOWED_EMAIL_DOMAIN = "@gsm.hs.kr";
 
@@ -48,17 +43,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
 
         MemberEntity member = memberRegistrationService.findOrRegister(MemberCommand.from(userInfo));
 
-        TokenResponse response = jwtProvider.receiveToken(member.getId(), member.getEmail(), member.getRole());
-
-        RefreshToken refreshToken = RefreshToken.builder()
-                .id(member.getId())
-                .token(response.refreshToken())
-                .expiresIn(jwtProperties.getRefreshTokenExpiration())
-                .build();
-
-        refreshTokenRepository.save(refreshToken);
-
-        return  response;
+        return refreshTokenService.execute(member.getId(),member.getEmail(), member.getRole());
     }
 
     private OAuthUserResponse extractUserInfo(OAuthType type, Map<String, Object> attributes) {

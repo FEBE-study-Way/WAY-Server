@@ -7,15 +7,13 @@ import WAY.way.global.oauth.dto.OAuthUserResponse;
 public record MemberCommand(
         String email,
         OAuthType provider,
-        String providerId,
-        Role role
+        String providerId
 ) {
     public static MemberCommand from(OAuthUserResponse userInfo) {
         return new MemberCommand(
                 userInfo.email(),
                 userInfo.type(),
-                userInfo.providerId(),
-                userInfo.role()
+                userInfo.providerId()
         );
     }
 }
