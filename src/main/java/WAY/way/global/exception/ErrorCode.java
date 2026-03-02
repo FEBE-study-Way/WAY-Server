@@ -3,9 +3,17 @@ package WAY.way.global.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 애플리케이션 전역 에러 코드 열거형.
+ * <p>
+ * 각 상수는 HTTP 상태 코드({@link #status})와 사용자에게 노출되는 메시지({@link #message})를 포함한다.
+ * {@link GlobalException}과 함께 사용된다.
+ * </p>
+ */
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+
     // 사용자 관련 에러
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
     USER_ALREADY_EXISTS(409, "이미 존재하는 사용자입니다."),
@@ -36,7 +44,9 @@ public enum ErrorCode {
     TOKEN_SIGNATURE_INVALID(401, "토큰 서명이 유효하지 않습니다."),
     TOKEN_UNSUPPORTED(401, "지원하지 않는 토큰입니다.");
 
-
+    /** HTTP 응답 상태 코드. */
     private final int status;
+
+    /** 클라이언트에 반환되는 에러 메시지. */
     private final String message;
 }

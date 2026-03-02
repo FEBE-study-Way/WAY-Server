@@ -17,6 +17,12 @@ import org.springframework.web.client.RestClientResponseException;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * OAuth 제공자와 통신하는 클라이언트 컴포넌트.
+ * <p>
+ * 인가 코드로 Access Token을 교환하고, Access Token으로 사용자 속성을 조회한다.
+ * </p>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -28,6 +34,14 @@ public class OAuthClient {
     private static final ParameterizedTypeReference<Map<String, Object>> MAP_TYPE =
             new ParameterizedTypeReference<>() {};
 
+    /**
+     * OAuth 인가 코드를 Access Token으로 교환한다.
+     *
+     * @param type OAuth 제공자 유형
+     * @param code 인가 코드
+     * @return 발급된 Access Token 문자열
+     * @throws OAuth2AuthenticationProcessingException 토큰 교환 실패 시
+     */
     public String getAccessToken(OAuthType type, String code) {
         ProviderProperties provider = providerConfig.get(type);
 
@@ -63,6 +77,14 @@ public class OAuthClient {
         }
     }
 
+    /**
+     * OAuth Access Token으로 사용자 속성을 조회한다.
+     *
+     * @param type        OAuth 제공자 유형
+     * @param accessToken OAuth 제공자로부터 발급받은 Access Token
+     * @return 사용자 속성 맵
+     * @throws OAuth2AuthenticationProcessingException 사용자 정보 조회 실패 시
+     */
     public Map<String, Object> getUserAttributes(OAuthType type, String accessToken) {
         ProviderProperties props = providerConfig.get(type);
 

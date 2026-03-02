@@ -13,6 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * {@link RefreshTokenService} 구현체.
+ * <p>
+ * JWT 토큰 발급 및 Refresh Token을 Redis에 저장·갱신한다.
+ * 재발급 시 기존 Refresh Token을 삭제하고 새 토큰 쌍을 저장한다(Token Rotation).
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
@@ -21,6 +28,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final JwtProvider jwtProvider;
     private final JwtProperties jwtProperties;
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * 기존에 저장된 Refresh Token을 삭제하고 새 토큰 쌍을 발급 후 Redis에 저장한다.
+     * </p>
+     */
     @Override
     @Transactional
     public TokenResponse execute(Long userId, String email, Role role) {
@@ -38,6 +51,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return response;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * 전달된 Refresh Token의 유효성 및 Redis 저장 값과의 일치 여부를 검증한 뒤
+     * 새 토큰 쌍을 발급하고 기존 토큰을 삭제한다(Token Rotation).
+     * </p>
+     *
+     * @throws InvalidRefreshTokenException  토큰이 유효하지 않거나 저장된 값과 다를 경우
+     * @throws RefreshTokenNotFoundException Redis에 토큰이 존재하지 않을 경우
+     */
     @Override
     @Transactional
     public TokenResponse reissueAccessToken(String refreshToken) {
