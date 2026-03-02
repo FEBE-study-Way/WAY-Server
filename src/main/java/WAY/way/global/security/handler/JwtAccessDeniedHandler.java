@@ -13,9 +13,24 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
+/**
+ * 인가(Authorization) 실패 시 403 Forbidden 응답을 반환하는 핸들러.
+ * <p>
+ * 인증은 되었으나 해당 리소스에 접근할 권한이 없을 때 호출된다.
+ * </p>
+ */
 @RequiredArgsConstructor
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
+
+    /**
+     * 403 Forbidden 응답을 JSON 형태로 전송한다.
+     *
+     * @param request               HTTP 요청
+     * @param response              HTTP 응답
+     * @param accessDeniedException 접근 거부 예외
+     * @throws IOException 응답 작성 중 입출력 예외
+     */
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,

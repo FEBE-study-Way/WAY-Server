@@ -20,6 +20,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Spring Security 설정 클래스.
+ * <p>
+ * JWT 기반 Stateless 인증을 구성하고, 공개 URL 패턴과 역할별 접근 제어를 정의한다.
+ * CORS 설정도 함께 포함한다.
+ * </p>
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -30,6 +37,9 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
 
+    /**
+     * 인증 없이 접근 가능한 공개 URL 패턴 목록.
+     */
     public static final String[] PUBLIC_URLS = {
             "/api/v1/auth/**",
             "/api/oauth2/**",
@@ -38,6 +48,13 @@ public class SecurityConfig {
             "/error"
     };
 
+    /**
+     * Spring Security 필터 체인을 구성한다.
+     *
+     * @param http {@link HttpSecurity} 설정 객체
+     * @return 구성된 {@link SecurityFilterChain}
+     * @throws Exception 설정 중 오류 발생 시
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -66,6 +83,14 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * CORS 설정 빈을 구성한다.
+     * <p>
+     * 모든 출처를 허용하며 자격 증명(쿠키 등)을 허용한다.
+     * </p>
+     *
+     * @return 구성된 {@link CorsConfigurationSource}
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -81,6 +106,12 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * 주어진 URI가 공개 URL 패턴에 해당하는지 확인한다.
+     *
+     * @param uri 확인할 요청 URI
+     * @return 공개 URL이면 {@code true}
+     */
     public static boolean isPublicUrl(String uri) {
         for (String pattern : PUBLIC_URLS) {
             if (new org.springframework.util.AntPathMatcher().match(pattern, uri)) {
