@@ -36,7 +36,7 @@ public class AuthController {
      * @return 새로 발급된 토큰 정보
      */
     @PatchMapping("/refresh")
-    public ResponseEntity<TokenResponse> reissue(@RequestHeader("RefreshToken") String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> reissue(@RequestHeader("Refresh-Token") String refreshToken, HttpServletResponse response) {
         TokenResponse token =
                 refreshTokenService.reissueAccessToken(refreshToken);
         response.setHeader(
