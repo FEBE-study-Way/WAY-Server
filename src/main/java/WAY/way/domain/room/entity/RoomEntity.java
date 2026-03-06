@@ -37,6 +37,10 @@ public class RoomEntity {
 
     /** 공간 담당 교사. */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner", nullable = false)
+    @JoinColumn(name = "owner")
     private MemberEntity owner;
+
+    public void assignOwner(MemberEntity owner) {
+        this.owner = owner;
+    }
 }
