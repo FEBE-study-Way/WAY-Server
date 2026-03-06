@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -104,6 +105,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String uri = request.getRequestURI();
+        AntPathMatcher matcher = new org.springframework.util.AntPathMatcher();
+        for (String pattern : SecurityConfig.AUTHENTICATED_URLS_UNDER_PUBLIC) {
+            if (matcher.match(pattern, uri)) {
+                return false;
+            }
+        }
         return request.getMethod().equalsIgnoreCase("OPTIONS") ||
                 SecurityConfig.isPublicUrl(uri);
     }
