@@ -1,7 +1,11 @@
 package WAY.way.domain.auth.presentation.data.request;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record TeacherSignUpRequest(
-    String name,
-    String roomName
+        @NotBlank
+        String name,
+        @NotBlank
+        String roomName
 ) {
 }
