@@ -15,7 +15,9 @@ import lombok.Getter;
 public enum ErrorCode {
 
     // 사용자 관련 에러
+    TEACHER_ALREADY_AUTHENTICATED(400, "이미 인증된 선생님입니다."),
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
+    NOT_FOUND_TEACHER_SIGNUP_REQUEST(404, "승인 요청을 찾을 수 없습니다."),
     USER_ALREADY_EXISTS(409, "이미 존재하는 사용자입니다."),
     USER_UNAUTHORIZED(403, "권한이 없습니다."),
 
@@ -42,8 +44,10 @@ public enum ErrorCode {
 
     TOKEN_MALFORMED(401, "잘못된 형식의 토큰입니다."),
     TOKEN_SIGNATURE_INVALID(401, "토큰 서명이 유효하지 않습니다."),
-    TOKEN_UNSUPPORTED(401, "지원하지 않는 토큰입니다.");
+    TOKEN_UNSUPPORTED(401, "지원하지 않는 토큰입니다."),
 
+    // Room 관련
+    NOT_FOUND_ROOM(404, "교실을 찾을 수 없습니다.");
     /** HTTP 응답 상태 코드. */
     private final int status;
 
