@@ -29,18 +29,11 @@ public class ApproveTeacherSignUpRequestServiceImpl implements ApproveTeacherSig
     private final TeacherSignUpRequestRepository teacherSignUpRequestRepository;
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
-    private final MemberUtil memberUtil;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
     public void execute(Long teacherSignUpRequestId, ApproveTeacherSignUpRequest request) {
-        MemberEntity admin = memberUtil.getCurrentMember();
-
-        if (!admin.getRole().name().equals(Role.ADMIN.name())) {
-            throw new UnauthorizedUserException();
-        }
-
         TeacherSignUpRequestEntity teacherSignUpRequest = teacherSignUpRequestRepository.findById(teacherSignUpRequestId)
                 .orElseThrow(NotFoundTeacherSignUpRequestException::new);
 
