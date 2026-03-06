@@ -74,6 +74,9 @@ public class OAuthClient {
             log.error("[OAuthClient] Token exchange failed - Status: {}, Body: {}",
                     e.getStatusCode(), e.getResponseBodyAsString());
             throw new OAuth2AuthenticationProcessingException();
+        } catch (Exception e) {
+            log.error("[OAuthClient] Token exchange failed - Unexpected error: {}", e.getMessage());
+            throw new OAuth2AuthenticationProcessingException();
         }
     }
 
@@ -104,6 +107,9 @@ public class OAuthClient {
         } catch (RestClientResponseException e) {
             log.error("[OAuthClient] User info fetch failed - Status: {}, Body: {}",
                     e.getStatusCode(), e.getResponseBodyAsString());
+            throw new OAuth2AuthenticationProcessingException();
+        } catch (Exception e) {
+            log.error("[OAuthClient] User info fetch failed - Unexpected error: {}", e.getMessage());
             throw new OAuth2AuthenticationProcessingException();
         }
     }
