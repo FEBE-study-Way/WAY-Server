@@ -80,4 +80,12 @@ public class MemberEntity {
     public void updateStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
     }
+
+    public void teacherSignUpRequest(String name) {
+        this.name = name;
+    }
+
+    public void completeTeacherSignUp() {
+        this.role = Role.ADMIN;
+    }
 }
