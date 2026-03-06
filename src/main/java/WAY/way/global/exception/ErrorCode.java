@@ -16,10 +16,11 @@ public enum ErrorCode {
 
     // 사용자 관련 에러
     TEACHER_ALREADY_AUTHENTICATED(400, "이미 인증된 선생님입니다."),
+    USER_UNAUTHORIZED(403, "권한이 없습니다."),
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다."),
     NOT_FOUND_TEACHER_SIGNUP_REQUEST(404, "승인 요청을 찾을 수 없습니다."),
     USER_ALREADY_EXISTS(409, "이미 존재하는 사용자입니다."),
-    USER_UNAUTHORIZED(403, "권한이 없습니다."),
+    ALREADY_PENDING_TEACHER_SIGN_UP_REQUEST(409, "이미 처리 대기 중인 교사 가입 요청이 존재합니다."),
 
     // OAuth , Auth
     OAUTH_PROVIDER_NOT_SUPPORTED(400, "지원하지 않는 OAuth 제공자입니다."),
