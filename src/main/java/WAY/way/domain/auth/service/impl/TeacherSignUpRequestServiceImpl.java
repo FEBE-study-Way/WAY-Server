@@ -1,7 +1,9 @@
 package WAY.way.domain.auth.service.impl;
 
 import WAY.way.domain.auth.entity.TeacherSignUpRequestEntity;
+import WAY.way.domain.auth.exception.AlreadyPendingTeacherSignUpRequestException;
 import WAY.way.domain.auth.exception.TeacherAlreadyAuthenticatedException;
+import WAY.way.domain.auth.presentation.data.ApproveType;
 import WAY.way.domain.auth.presentation.data.request.TeacherSignUpRequest;
 import WAY.way.domain.auth.repository.TeacherSignUpRequestRepository;
 import WAY.way.domain.auth.service.TeacherSignUpRequestService;
@@ -33,6 +35,10 @@ public class TeacherSignUpRequestServiceImpl implements TeacherSignUpRequestServ
 
         if (!teacher.getRole().name().equals(Role.UNAUTHENTICATED.name())) {
             throw new TeacherAlreadyAuthenticatedException();
+        }
+
+        if (teacherSignUpRequestRepository.existsByTeacherAndApproveType(teacher, ApproveType.PENDING)) {
+            throw new AlreadyPendingTeacherSignUpRequestException();
         }
 
         validateRoomExists(request.roomName());
