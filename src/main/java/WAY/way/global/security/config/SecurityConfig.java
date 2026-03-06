@@ -49,6 +49,15 @@ public class SecurityConfig {
     };
 
     /**
+     * PUBLIC_URLS 패턴에 포함되지만 JWT 인증이 필요한 URL 목록.
+     */
+    public static final String[] AUTHENTICATED_URLS_UNDER_PUBLIC = {
+            "/api/v1/auth/teacher/signup",
+            "/api/v1/auth/teacher/signup/**",
+            "/api/v1/auth/signup"
+    };
+
+    /**
      * Spring Security 필터 체인을 구성한다.
      *
      * @param http {@link HttpSecurity} 설정 객체
@@ -70,9 +79,11 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/teacher/signup/{teacherSignUpRequestId}").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/auth/teacher/signup").hasRole("UNAUTHENTICATED")
+                        .requestMatchers("/api/v1/auth/signup").hasRole("UNAUTHENTICATED")
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/auth/signup").hasRole("UNAUTHENTICATED")
                         .requestMatchers("/api/v1/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
