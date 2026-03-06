@@ -8,6 +8,7 @@ import WAY.way.domain.auth.presentation.data.request.ApproveTeacherSignUpRequest
 import WAY.way.domain.auth.repository.TeacherSignUpRequestRepository;
 import WAY.way.domain.auth.service.ApproveTeacherSignUpRequestService;
 import WAY.way.domain.member.entity.MemberEntity;
+import WAY.way.domain.member.exception.NotFoundMemberException;
 import WAY.way.domain.member.presentation.data.Role;
 import WAY.way.domain.member.repository.MemberRepository;
 import WAY.way.domain.notification.entity.constant.NotificationType;
@@ -55,7 +56,7 @@ public class ApproveTeacherSignUpRequestServiceImpl implements ApproveTeacherSig
 
     private void approveTeacherSignUpRequest(Long teacherId, String roomName) {
         MemberEntity teacher = memberRepository.findById(teacherId)
-                .orElseThrow(NotFoundTeacherSignUpRequestException::new);
+                .orElseThrow(NotFoundMemberException::new);
 
         RoomEntity room = roomRepository.findByName(roomName)
                 .orElseThrow(NotFoundRoomException::new);
