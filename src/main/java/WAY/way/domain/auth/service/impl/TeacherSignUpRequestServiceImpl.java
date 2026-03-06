@@ -14,10 +14,11 @@ import WAY.way.domain.room.exception.NotFoundRoomException;
 import WAY.way.domain.room.repository.RoomRepository;
 import WAY.way.global.event.SendNotificationEvent;
 import WAY.way.global.util.MemberUtil;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
