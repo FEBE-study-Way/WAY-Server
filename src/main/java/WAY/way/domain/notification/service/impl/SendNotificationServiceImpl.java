@@ -36,8 +36,7 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     }
 
     private void sendTeacherSignUpRequestNotification(Long teacherSignUpRequestId, NotificationType notificationType) {
-        TeacherSignUpRequestEntity request = teacherSignUpRequestRepository.findById(teacherSignUpRequestId)
-                .orElseThrow(NotFoundTeacherSignUpRequestException::new);
+        TeacherSignUpRequestEntity request = findRequestOrThrow(teacherSignUpRequestId);
 
         List<MemberEntity> admins = memberRepository.findAllByRole(Role.ADMIN);
 
@@ -58,8 +57,7 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     }
 
     private void sendTeacherSignUpRequestResultNotification(Long teacherSignUpRequestId, NotificationType notificationType) {
-        TeacherSignUpRequestEntity request = teacherSignUpRequestRepository.findById(teacherSignUpRequestId)
-                .orElseThrow(NotFoundTeacherSignUpRequestException::new);
+        TeacherSignUpRequestEntity request = findRequestOrThrow(teacherSignUpRequestId);
 
         String title = notificationType.getTitle();
         String body = notificationType.formatBody(request.getTeacher().getName());
@@ -73,5 +71,10 @@ public class SendNotificationServiceImpl implements SendNotificationService {
                 .build();
 
         notificationRepository.save(notification);
+    }
+
+    private TeacherSignUpRequestEntity findRequestOrThrow(Long teacherSignUpRequestId) {
+        return teacherSignUpRequestRepository.findById(teacherSignUpRequestId)
+                .orElseThrow(NotFoundTeacherSignUpRequestException::new);
     }
 }
