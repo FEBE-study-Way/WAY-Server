@@ -43,7 +43,7 @@ public class TeacherSignUpRequestServiceImpl implements TeacherSignUpRequestServ
         }
 
         validateRoomExists(request.roomName());
-        teacher.teacherSignUpRequest(request.name());
+        teacher.setTeacherName(request.name());
 
         TeacherSignUpRequestEntity teacherSignUpRequest = TeacherSignUpRequestEntity.builder()
                 .teacher(teacher)

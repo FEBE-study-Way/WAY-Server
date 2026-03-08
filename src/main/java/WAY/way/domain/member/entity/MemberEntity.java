@@ -81,7 +81,7 @@ public class MemberEntity {
         this.studentNumber = studentNumber;
     }
 
-    public void teacherSignUpRequest(String name) {
+    public void setTeacherName(String name) {
         this.name = name;
     }
 
