@@ -34,7 +34,7 @@ public class TeacherSignUpRequestServiceImpl implements TeacherSignUpRequestServ
     public void execute(TeacherSignUpRequest request) {
         MemberEntity teacher = memberUtil.getCurrentMember();
 
-        if (!teacher.getRole().name().equals(Role.UNAUTHENTICATED.name())) {
+        if (teacher.getRole() != Role.UNAUTHENTICATED) {
             throw new TeacherAlreadyAuthenticatedException();
         }
 
