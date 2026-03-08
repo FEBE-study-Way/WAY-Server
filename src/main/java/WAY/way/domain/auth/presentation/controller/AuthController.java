@@ -1,11 +1,11 @@
 package WAY.way.domain.auth.presentation.controller;
 
+import WAY.way.domain.auth.presentation.data.request.ApproveTeacherSignUpRequest;
 import WAY.way.domain.auth.presentation.data.request.OAuthLoginRequest;
 import WAY.way.domain.auth.presentation.data.request.SignUpRequest;
+import WAY.way.domain.auth.presentation.data.request.TeacherSignUpRequest;
 import WAY.way.domain.auth.presentation.data.response.TokenResponse;
-import WAY.way.domain.auth.service.OAuthLoginService;
-import WAY.way.domain.auth.service.RefreshTokenService;
-import WAY.way.domain.auth.service.SignUpService;
+import WAY.way.domain.auth.service.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final OAuthLoginService  oAuthLoginService;
+    private final OAuthLoginService oAuthLoginService;
     private final RefreshTokenService refreshTokenService;
     private final SignUpService singUpService;
+    private final TeacherSignUpRequestService teacherSignUpRequestService;
+    private final ApproveTeacherSignUpRequestService approveTeacherSignUpRequestService;
 
     /**
      * Refresh Token으로 Access Token을 재발급한다.
@@ -68,5 +70,20 @@ public class AuthController {
     public ResponseEntity<TokenResponse> signup(@Valid @RequestBody SignUpRequest request) {
         TokenResponse response = singUpService.execute(request);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/teacher/signup")
+    public ResponseEntity<Void> teacherSignUpRequest(@Valid @RequestBody TeacherSignUpRequest request) {
+        teacherSignUpRequestService.execute(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/teacher/signup/{teacherSignUpRequestId}")
+    public ResponseEntity<Void> approveTeacherSignUpRequest(
+            @PathVariable Long teacherSignUpRequestId,
+            @Valid @RequestBody ApproveTeacherSignUpRequest request
+    ) {
+        approveTeacherSignUpRequestService.execute(teacherSignUpRequestId, request);
+        return ResponseEntity.ok().build();
     }
 }
