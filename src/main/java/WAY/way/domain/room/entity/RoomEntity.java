@@ -30,7 +30,7 @@ public class RoomEntity {
     @Column(nullable = false , name = "floor")
     private Integer floor;
 
-    /** 공간 유형 ({@link Kind#SCHOOL} 또는 {@link Kind#DORMITORY}). */
+    /** 공간 유형 ({@link Kind#MAIN} 또는 {@link Kind#DONGHANG} 또는 {@link Kind#GEUMBONG}). */
     @Enumerated(EnumType.STRING)
     @Column(name = "kind" , nullable = false)
     private Kind kind;
